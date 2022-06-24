@@ -1,12 +1,16 @@
+import React from "react";
 import { NextPage } from "next";
-import styled from "styled-components";
+import TodoList from "../components/TodoList";
+import { TodoType } from "../types/todo";
 
-const Container = styled.div`
-  font-style: italic;
-`;
+const todos: TodoType[] = [
+  { id: 1, text: "1", color: "red", checked: false},
+  { id: 2, text: "2", color: "orange", checked: true},
+  { id: 3, text: "3", color: "red", checked: false},
+];
 
-const index: NextPage = () => {
-  return <Container>Hello Styled-components</Container>;
+const app: NextPage = () => {
+  return <TodoList todos={todos} />;
 };
 
-export default index;
+export default app;
