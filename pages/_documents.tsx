@@ -11,23 +11,22 @@ class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
-
     try {
-       ctx.renderPage = () => 
+      ctx.renderPage = () =>
         originalRenderPage({
           enhanceApp: (App) => (props) =>
             sheet.collectStyles(<App {...props} />),
         });
-      const initialPage = await Document.getInitialProps(ctx);
+      const initialProps = await Document.getInitialProps(ctx);
       return {
-        ...initialPage,
+        ...initialProps,
         styles: (
           <>
-            {initialPage.styles}
+            {initialProps.styles}
             {sheet.getStyleElement()}
           </>
-        )
-      }
+        ),
+      };
     } finally {
       sheet.seal();
     }
@@ -37,12 +36,12 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link 
-            href="https://fonts.googleais.com/css?family=Noto+Sans:400,700&display=swap"
+          <link
+            href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700&display=swap"
             rel="stylesheet"
           />
-          <link 
-            href="https://fonts.googleais.com/css?family=Noto+Sans+KR:400,700&display=swap&subset=korean"
+          <link
+            href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700&display=swap&subset=korean"
             rel="stylesheet"
           />
         </Head>
@@ -52,7 +51,7 @@ class MyDocument extends Document {
         </body>
       </Html>
     );
-  };
-};
+  }
+}
 
 export default MyDocument;
