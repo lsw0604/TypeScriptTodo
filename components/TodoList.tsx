@@ -1,9 +1,12 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import styled from "styled-components";
 import palette from "../styles/palette";
 import { TodoType } from "../types/todo";
 import TrashCanIcon from "../public/statics/svg/trash.svg";
 import CheckIcon from "../public/statics/svg/check.svg";
+import { checkTodoAPI } from "../lib/api/todo";
+import { useRouter } from "next/dist/client/router";
+import todo from "../lib/data/todo";
 
 const Container = styled.div`
   width: 100%;
@@ -125,8 +128,34 @@ interface IProps {
   todos: TodoType[]
 };
 
+const router = useRouter();
+
+const [localTodos, setLocalTodos] = useState(todos);
+
 const TodoList: React.FC<IProps> = ({ todos }) => {
-  
+  const checkTodo = async (id: number) => {
+    try {
+      await checkTodoAPI(id);
+      console.log("checked");
+      // 체크를 적용하는 방법 1 (데이터 다시 받기)
+      // router.reload();
+
+      // 체크를 적용하는 방법 2 (데이터 다시 받기)
+      // router.push("/");
+
+      // 체크를 적용하는 방법 3 (data를 local로 저장하여 사용하기)
+      const newTodos = localTodos.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, checked: !todo.checked };
+        }
+        return todo;
+      });
+      setLocalTodos(newTodos);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   const getTodoColorNum = useCallback(() => {
     let red = 0;
     let orange = 0;
@@ -213,11 +242,15 @@ const TodoList: React.FC<IProps> = ({ todos }) => {
                 {todo.checked && (
                   <div>
                     <TrashCanIcon className="todo-trash-can" onClick={() => {}} />
-                    <CheckIcon className="todo-check-mark" onClick={() => {}} />
+                    <CheckIcon className="todo-check-mark" onClick={() => {
+                      checkTodo(todo.id);
+                    }} />
                   </div>
                 )}
                 {!todo.checked && (
-                  <button className="todo-button" type="button" onClick={() => {}} />
+                  <button className="todo-button" type="button" onClick={() => {
+                    checkTodo(todo.id);
+                  }} />
                 )}
               </div>
             </li>
