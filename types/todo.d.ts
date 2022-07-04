@@ -3,4 +3,4 @@ export type TodoType = {
   text: string;
   color: "red" | "orange" | "yellow" | "green" | "blue" | "navy";
   checked: boolean;
-}
+};

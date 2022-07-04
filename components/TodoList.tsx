@@ -4,9 +4,7 @@ import palette from "../styles/palette";
 import { TodoType } from "../types/todo";
 import TrashCanIcon from "../public/statics/svg/trash.svg";
 import CheckIcon from "../public/statics/svg/check.svg";
-import { checkTodoAPI } from "../lib/api/todo";
-import { useRouter } from "next/dist/client/router";
-import todo from "../lib/data/todo";
+import { checkTodoAPI, deleteTodoAPI } from "../lib/api/todo";
 
 const Container = styled.div`
   width: 100%;
@@ -128,34 +126,7 @@ interface IProps {
   todos: TodoType[]
 };
 
-const router = useRouter();
-
-const [localTodos, setLocalTodos] = useState(todos);
-
 const TodoList: React.FC<IProps> = ({ todos }) => {
-  const checkTodo = async (id: number) => {
-    try {
-      await checkTodoAPI(id);
-      console.log("checked");
-      // 체크를 적용하는 방법 1 (데이터 다시 받기)
-      // router.reload();
-
-      // 체크를 적용하는 방법 2 (데이터 다시 받기)
-      // router.push("/");
-
-      // 체크를 적용하는 방법 3 (data를 local로 저장하여 사용하기)
-      const newTodos = localTodos.map((todo) => {
-        if (todo.id === id) {
-          return { ...todo, checked: !todo.checked };
-        }
-        return todo;
-      });
-      setLocalTodos(newTodos);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   const getTodoColorNum = useCallback(() => {
     let red = 0;
     let orange = 0;
@@ -198,10 +169,12 @@ const TodoList: React.FC<IProps> = ({ todos }) => {
     };
   }, [todos]);
 
+  // 객체의 문자열 인덱스 사용을 위한 타입
   type ObjectIndexType = {
     [key: string]: number | undefined;
   };
-    
+  
+  // 색깔 객체 구하기 2
   const todoColorNum = useMemo(() => {
     const colors: ObjectIndexType = {};
     todos.forEach((todo) => {
@@ -214,6 +187,40 @@ const TodoList: React.FC<IProps> = ({ todos }) => {
     });
     return colors;
   }, [todos]);
+
+  // 투두 체크하기
+  const checkTodo = async (id: number) => {
+    try {
+      await checkTodoAPI(id);
+      console.log("checked");
+      // 체크를 적용하는 방법 1 (데이터 다시 받기)
+      // router.reload();
+
+      // 체크를 적용하는 방법 2 (데이터 다시 받기)
+      // router.push("/");
+
+      // 체크를 적용하는 방법 3 (data를 local로 저장하여 사용하기)
+      const newTodos = todos.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, checked: !todo.checked };
+        }
+        return todo;
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  const deleteTodo = async (id: number) => {
+    try {
+      await deleteTodoAPI(id);
+      const newTodos = localTodos.filter((todo) => todo.id !== id);
+      setLocalTodos(newTodos);
+      console.log("Delete");
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <Container>
@@ -241,7 +248,7 @@ const TodoList: React.FC<IProps> = ({ todos }) => {
               <div className="todo-right-side">
                 {todo.checked && (
                   <div>
-                    <TrashCanIcon className="todo-trash-can" onClick={() => {}} />
+                    <TrashCanIcon className="todo-trash-can" onClick={() => {deleteTodo(todo.id)}} />
                     <CheckIcon className="todo-check-mark" onClick={() => {
                       checkTodo(todo.id);
                     }} />

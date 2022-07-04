@@ -9,7 +9,11 @@ interface IProps {
 }
 
 const app: NextPage<IProps> = ({ todos }) => {
-  return <TodoList todos={todos} />;
+  return (
+    <>
+      <TodoList todos={todos} />
+    </>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
