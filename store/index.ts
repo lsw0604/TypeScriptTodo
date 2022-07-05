@@ -1,9 +1,19 @@
-import { createStore, applyMiddleware, combineReducers } from "redux";
+import {
+  TypedUseSelectorHook,
+  useSelector as useReduxSelector,
+} from "react-redux";
 import { HYDRATE, createWrapper } from "next-redux-wrapper";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import todo from "./todo";
 
+declare module "react-redux" {
+  interface DefaultRootState extends RootState {}
+};
+
+export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
+
 const rootReducer = combineReducers({
-  todo,
+  todo: todo.reducer,
 });
 
 const reducer = (state, action) => {
@@ -12,6 +22,7 @@ const reducer = (state, action) => {
       ...state,
       ...action.payload,
     };
+    if (state.count) nextState.count = state.count;
     return nextState;
   }
   return rootReducer(state, action);
@@ -19,16 +30,11 @@ const reducer = (state, action) => {
 
 export type RootState = ReturnType<typeof rootReducer>;
 
-const bindMiddleware = (middleware: any) => {
-  if (process.env.NODE_ENV !== "production") {
-    const { composeWithDevTools } = require("redux-devtools-extension");
-    return composeWithDevTools(applyMiddleware(...middleware));
-  }
-  return applyMiddleware(...middleware);
-};
-
 const initStore = () => {
-  return createStore(reducer, bindMiddleware([]));
+  return configureStore({
+    reducer,
+    devTools: true,
+  })
 };
 
 export const wrapper = createWrapper(initStore);

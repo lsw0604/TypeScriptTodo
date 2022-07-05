@@ -5,6 +5,8 @@ import { TodoType } from "../types/todo";
 import TrashCanIcon from "../public/statics/svg/trash.svg";
 import CheckIcon from "../public/statics/svg/check.svg";
 import { checkTodoAPI, deleteTodoAPI } from "../lib/api/todo";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 
 const Container = styled.div`
   width: 100%;
@@ -122,11 +124,8 @@ const Container = styled.div`
   }
 `;
 
-interface IProps {
-  todos: TodoType[]
-};
-
-const TodoList: React.FC<IProps> = ({ todos }) => {
+const TodoList: React.FC = () => {
+  const todos = useSelector((state) => state.todo.todos);
   const getTodoColorNum = useCallback(() => {
     let red = 0;
     let orange = 0;
