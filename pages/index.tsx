@@ -6,9 +6,8 @@ import { wrapper } from "../store";
 import { todoActions } from "../store/todo";
 
 const app: NextPage = () => {
-  return <TodoList todos={[]} />;
+  return <TodoList />;
 };
-
 export const getServerSideProps = wrapper.getServerSideProps(
   async ({ store }) => {
     try {
@@ -16,10 +15,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
       store.dispatch(todoActions.setTodo(data));
       return { props: {} };
     } catch (e) {
-      console.log("page index.tsx : ", e);
+      console.log(e);
       return { props: {} };
     }
   }
-)
+);
 
 export default app;

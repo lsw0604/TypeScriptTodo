@@ -6,12 +6,6 @@ import { HYDRATE, createWrapper } from "next-redux-wrapper";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import todo from "./todo";
 
-declare module "react-redux" {
-  interface DefaultRootState extends RootState {}
-};
-
-export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
-
 const rootReducer = combineReducers({
   todo: todo.reducer,
 });
@@ -29,6 +23,8 @@ const reducer = (state, action) => {
 };
 
 export type RootState = ReturnType<typeof rootReducer>;
+
+export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
 
 const initStore = () => {
   return configureStore({
